@@ -19,7 +19,7 @@ class Weapon:
     name: str
     min_damage: float
     max_damage: float
-    stamina_per_hit: float
+    stamina_per_hit: float  # stamina consumption per hit
 
 
 @dataclass
@@ -31,7 +31,7 @@ class Armor:
     id: int
     name: str
     defence: float
-    stamina_per_turn: float
+    stamina_per_turn: float  # stamina consumption per turn
 
 
 @dataclass
