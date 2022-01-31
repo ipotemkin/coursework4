@@ -47,6 +47,7 @@ class EquipmentData:
 class Equipment:
     """
     to get data from a JSON file and store in an object
+    to interact with a character
     """
 
     def __init__(self, file_name: str = EQUIPMENT_FILE):
@@ -54,7 +55,7 @@ class Equipment:
         try:
             self.equipment = EquipmentData(**self._read_json(file_name))
         except (TypeError, AttributeError) as error:
-            print("Error while parsinng the JSON file:", error)
+            print("Error while parsing the JSON file:", error)
             # raise ValueError
             sys.exit(1)
 
