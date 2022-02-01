@@ -16,6 +16,9 @@ class Skill(ABC):
         self.damage = damage
         self.required_stamina = stamina
 
+    def __repr__(self):
+        return f"{self.name} (damage={self.damage}, stamina={self.required_stamina})"
+
     @abstractmethod
     def skill_effect(self) -> None:
         """

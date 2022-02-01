@@ -1,4 +1,9 @@
-"""This module contains classes for the application"""
+"""
+This module contains classes for heroes' types (to not confuse with python classes)
+1. ProUnitClass - a parent dataclass to get it easy (using all benefits of dataclasses
+2. MetaUnitClass - a meta class to implement a list of instances of the class
+3. UnitClass - a base class to build heroes' types
+"""
 
 from dataclasses import dataclass
 from typing import Optional, List, Generator, Any
@@ -65,8 +70,9 @@ class UnitClass(ProUnitClass, metaclass=MetaUnitClass):
     #     return self.items[item]
 
 
-# ferocious_kick = ConcreteSkill(name="Свирепый пинок", damage=12.0, stamina=6.0)
-
+ferocious_kick = ConcreteSkill(name="Свирепый пинок", damage=12.0, stamina=6.0)
+stiff_shot = ConcreteSkill(name="Мощный укол", damage=15.0, stamina=5.0)
+tickling = ConcreteSkill(name="Щекотка", damage=5.0, stamina=3.0)
 
 warrior = UnitClass(
     name="Воин",
@@ -75,6 +81,7 @@ warrior = UnitClass(
     attack=0.8,
     stamina=0.9,
     armor=1.2,
+    skill=stiff_shot
 )
 
 ranger = UnitClass(
@@ -84,6 +91,7 @@ ranger = UnitClass(
     attack=0.8,
     stamina=0.9,
     armor=1.2,
+    skill=ferocious_kick
 )
 
 thief = UnitClass(
@@ -93,6 +101,7 @@ thief = UnitClass(
     attack=1.5,
     stamina=1.2,
     armor=1.0,
+    skill=tickling
 )
 
 if __name__ == "__main__":
