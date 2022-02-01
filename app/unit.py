@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 # from dataclasses import dataclass
 from typing import Optional
 
-from app.classes import UnitClass
+# from app.classes import UnitClass
 from app.equipment import Weapon, Armor
 
 
@@ -23,7 +23,7 @@ class BaseUnit(ABC):
     # _armor: Armor
     # skill_used: bool
 
-    def __init__(self, name: str, hero: UnitClass, health: float, stamina: float):
+    def __init__(self, name: str, hero: str, health: float, stamina: float):
         self.name = name
         self.hero = hero
         self.health = health
