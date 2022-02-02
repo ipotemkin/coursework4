@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from app.unit import BaseUnit
+# from app.unit import BaseUnit
 
 
 class Skill(ABC):
@@ -26,14 +26,21 @@ class Skill(ABC):
         """
 
     # @abstractmethod
-    def use(self, user: BaseUnit, target: BaseUnit) -> Optional[str]:
+    def use(self, user: str, target: str) -> Optional[str]:
         """
         to use the class skill after checking the user's stamina
         """
 
-        if user.stamina >= self.required_stamina:
-            return self.skill_effect()
-        return f"{user.name} попытался использовать {self.name}, но у него не хватило выносливости."
+        # if user.stamina >= self.required_stamina:
+        #     return self.skill_effect()
+        # return f"{user.name} попытался использовать {self.name},
+        # но у него не хватило выносливости."
+
+    def get_required_stamina(self) -> float:
+        return self.required_stamina
+
+    def get_skill_name(self) -> str:
+        return self.name
 
 
 class ConcreteSkill(Skill):

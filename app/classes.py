@@ -21,9 +21,26 @@ class ProUnitClass:
     max_health: float
     max_stamina: float
     attack: float  # модификатор атаки
-    stamina: float  # модификатор выносливости
+    stamina_mod: float  # модификатор выносливости
     armor: float  # модификатор защиты
     skill: Optional[ConcreteSkill] = None
+
+    def get_stamina_mod(self) -> float:
+        return self.stamina_mod
+
+    def get_required_stamina(self) -> float:
+        return self.skill.get_required_stamina()
+
+    def get_skill_name(self) -> Optional[str]:
+        return self.skill.get_skill_name() if self.skill else None
+
+    # @property
+    # def stamina_mod(self):
+    #     return self._stamina_mod
+    #
+    # @stamina_mod.setter
+    # def stamina_mod(self, new_stamina):
+    #     self._stamina_mod = new_stamina
 
 
 class MetaUnitClass(type):
@@ -79,9 +96,9 @@ warrior = UnitClass(
     max_health=60.0,
     max_stamina=30.0,
     attack=0.8,
-    stamina=0.9,
+    stamina_mod=0.9,
     armor=1.2,
-    skill=stiff_shot
+    skill=stiff_shot,
 )
 
 ranger = UnitClass(
@@ -89,9 +106,9 @@ ranger = UnitClass(
     max_health=60.0,
     max_stamina=30.0,
     attack=0.8,
-    stamina=0.9,
+    stamina_mod=0.9,
     armor=1.2,
-    skill=ferocious_kick
+    skill=ferocious_kick,
 )
 
 thief = UnitClass(
@@ -99,9 +116,9 @@ thief = UnitClass(
     max_health=50.0,
     max_stamina=25.0,
     attack=1.5,
-    stamina=1.2,
+    stamina_mod=1.2,
     armor=1.0,
-    skill=tickling
+    skill=tickling,
 )
 
 if __name__ == "__main__":

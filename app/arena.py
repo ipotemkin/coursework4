@@ -5,6 +5,7 @@ from threading import Lock
 # , Thread
 
 from app.unit import HumanPlayer, CompPlayer
+from app.const import STAMINA_RECOVER_PER_TURN
 
 
 class SingletonMeta(type):
@@ -48,7 +49,12 @@ class Arena(metaclass=SingletonMeta):
     provides interaction between players
     """
 
-    def __init__(self, stamina: float, hero: HumanPlayer, enemy: CompPlayer):
+    def __init__(
+        self,
+        hero: HumanPlayer,
+        enemy: CompPlayer,
+        stamina: float = STAMINA_RECOVER_PER_TURN,
+    ):
         self.stamina = stamina
         self.hero = hero
         self.enemy = enemy
@@ -56,21 +62,33 @@ class Arena(metaclass=SingletonMeta):
 
     def start_game(self):
         # TODO
+        # присваивает экземпляру класса Арена значение свойства Игрок и значение свойства Противник
         self.game_on = True
 
-    def next_turn(self):
-        pass
+    def next_turn(self) -> str:
+        # проверка, осталось ли еще здоровье у игроков.
+        if self.check_health():
+            self.regenerate_stamina()
+            # TODO
+            # противник наносит удар
+            # и снова наступает ход игрока
+            return ""
+        return self.end_game()
+        # Если да, тогда происходит восстановление выносливости игроков, противник наносит удар,
+        # и снова наступает ход игрока. Если нет, тогда метод «Проверка здоровья игроков» возвращает
+        # строку с результатом боя.
 
     def regenerate_stamina(self):
-        pass
+        self.hero.stamina = self.stamina * self.hero.get_stamina_mod()
+        self.enemy.stamina = self.stamina * self.enemy.get_stamina_mod()
 
-    def check_health(self) -> None:
-        """
-        Ends the game if the players' health <= 0
-        """
+        # - Прибавляем к очкам выносливости атакующего константу, умноженную на модификатор
+        # выносливости **атакующего.**
+        # - Прибавляем к очкам выносливости цели константу, умноженную на модификатор
+        # выносливости **цели.**
 
-        if self.hero.health <= 0.0 or self.enemy.health <= 0.0:
-            self.end_game()
+    def check_health(self) -> bool:
+        return (self.hero.health > 0.0) and (self.enemy.health > 0.0)
 
     def end_game(self) -> str:
         # TODO
