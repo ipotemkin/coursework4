@@ -1,22 +1,40 @@
 """Sets up a hero's logics"""
 
-from abc import ABC, abstractmethod
+# from abc import ABC, abstractmethod
 
 from dataclasses import dataclass
 from typing import Optional
 
-from random import uniform
+from random import uniform, randint
 
 from app.classes import UnitClass
 from app.equipment import Weapon, Armor
 
 
+# @dataclass
+# class ProBaseUnit:
+#     """
+#     a pro class for a BaseUnit to use benefits of dataclasses
+#     """
+#
+#     name: str
+#     hero_type: UnitClass
+#     health: float
+#     stamina: float
+#     _weapon: Optional[Weapon] = None
+#     _armor: Optional[Armor] = None
+#     skill_used: bool = False
+
+
+# @dataclass  # – here mypy raises an error:
+# Only concrete class can be given where "Type[BaseUnit]" is expected
 @dataclass
-class ProBaseUnit:
+class BaseUnit:
     """
-    a pro class for a BaseUnit to use benefits of dataclasses
+    an abstract class for a hero
     """
 
+    # use this block with @dataclass in line 27
     name: str
     hero_type: UnitClass
     health: float
@@ -24,23 +42,6 @@ class ProBaseUnit:
     _weapon: Optional[Weapon] = None
     _armor: Optional[Armor] = None
     skill_used: bool = False
-
-
-# @dataclass  # – here mypy raises an error:
-# Only concrete class can be given where "Type[BaseUnit]" is expected
-class BaseUnit(ABC, ProBaseUnit):
-    """
-    an abstract class for a hero
-    """
-
-    # use this block with @dataclass in line 27
-    # name: str
-    # hero: str
-    # health: float
-    # stamina: float
-    # _weapon: Optional[Weapon] = None
-    # _armor: Optional[Armor] = None
-    # skill_used: bool = False
 
     # def __init__(self, name: str, hero: str, health: float, stamina: float):
     #     self.name = name
@@ -95,29 +96,9 @@ class BaseUnit(ABC, ProBaseUnit):
 
         self.health -= damage
 
-    def use_skill(self) -> str:
-        """
-        применение умения к цели (см. шаг IV)
-        """
-
-        # TODO
-        if self.skill_used:
-            return "Навнык уже использован"
-        # if stamina is enough:
-        if self.stamina >= self.hero_type.get_required_stamina():
-            self.skill_used = True
-            return (
-                f"{self.name} использует {self.hero_type.get_skill_name()}"
-                f" и наносит <урон> урона сопернику"
-            )
-        return (
-            f"{self.name} пыталтся использовать {self.hero_type.get_skill_name()},"
-            f" но у него не хватило выносливости"
-        )
-
-    @abstractmethod
-    def attack(self, other: ProBaseUnit) -> str:
-        pass
+    # @abstractmethod
+    # def attack(self, other: ProBaseUnit) -> str:
+    #     pass
 
     # def attack(self, other: ProBaseUnit) -> str:
     #     """
@@ -159,6 +140,7 @@ class BaseUnit(ABC, ProBaseUnit):
 class Unit(BaseUnit):
     """
     a hero unit
+    derived from BaseUnit in order to use BaseUnit type as arguments
     """
 
     def _get_final_damage(self, other: BaseUnit) -> float:
@@ -203,6 +185,29 @@ class Unit(BaseUnit):
             f" но {other.armor.name} соперника его останавливает"
         )
 
+    def use_skill(self, other: BaseUnit) -> str:
+        """
+        применение умения к цели (см. шаг IV)
+        """
+
+        # TODO
+        if self.skill_used:
+            return "Навык уже использован"
+
+        # if stamina is enough:
+        if self.stamina >= self.hero_type.get_required_stamina():
+            self.skill_used = True
+            other.get_damage(self.hero_type.skill.damage)
+
+            return (
+                f"{self.name} использует {self.hero_type.get_skill_name()}"
+                f" и наносит {self.hero_type.skill.damage} урона сопернику"
+            )
+        return (
+            f"{self.name} пыталтся использовать {self.hero_type.get_skill_name()},"
+            f" но у него не хватило выносливости"
+        )
+
 
 # unit = BaseUnit("", UnitClass(), 0.0, 0.0, "", "", False)
 
@@ -221,6 +226,11 @@ class CompPlayer(Unit):
     """
     A computer player's class
     """
+
+    def attack_or_use_skill(self, other: BaseUnit) -> str:
+        if (randint(1, 10) == 5) and not self.skill_used:  # 10% chance to use the hero's skill
+            return self.use_skill(other)
+        return self.attack(other)
 
     # def attack(self) -> str:
     #     if not self.skill_used:
