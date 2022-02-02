@@ -2,39 +2,22 @@
 
 # from abc import ABC, abstractmethod
 
+from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
 from random import uniform, randint
 
-from app.classes import UnitClass
-from app.equipment import Weapon, Armor
+from app.classes import UnitClass, warrior, thief
+from app.equipment import Weapon, Armor, Equipment
 
 
-# @dataclass
-# class ProBaseUnit:
-#     """
-#     a pro class for a BaseUnit to use benefits of dataclasses
-#     """
-#
-#     name: str
-#     hero_type: UnitClass
-#     health: float
-#     stamina: float
-#     _weapon: Optional[Weapon] = None
-#     _armor: Optional[Armor] = None
-#     skill_used: bool = False
-
-
-# @dataclass  # – here mypy raises an error:
-# Only concrete class can be given where "Type[BaseUnit]" is expected
 @dataclass
 class BaseUnit:
     """
-    an abstract class for a hero
+    an base class for a hero
     """
 
-    # use this block with @dataclass in line 27
     name: str
     hero_type: UnitClass
     health: float
@@ -42,15 +25,6 @@ class BaseUnit:
     _weapon: Optional[Weapon] = None
     _armor: Optional[Armor] = None
     skill_used: bool = False
-
-    # def __init__(self, name: str, hero: str, health: float, stamina: float):
-    #     self.name = name
-    #     self.hero = hero
-    #     self.health = health
-    #     self.stamina = stamina
-    #     self._weapon: Optional[Weapon] = None
-    #     self._armor: Optional[Armor] = None
-    #     self.skill_used: bool = False
 
     @property
     def weapon(self) -> Optional[Weapon]:
@@ -82,50 +56,12 @@ class BaseUnit:
         else:
             print("Not a valid instance of Armor")
 
-    # def _get_final_damage(self) -> None:
-    #     """
-    #     вычисление итогового урона (см. шаг IV)
-    #     """
-    #
-    #     # TODO
-
     def get_damage(self, damage: float) -> None:
         """
         вычисление полученного урона персонажем (см. шаг IV)
         """
 
         self.health -= damage
-
-    # @abstractmethod
-    # def attack(self, other: ProBaseUnit) -> str:
-    #     pass
-
-    # def attack(self, other: ProBaseUnit) -> str:
-    #     """
-    #     нанести удар (см. шаг IV)
-    #     """
-    #
-    #     if self.stamina < self.weapon.stamina_per_hit:
-    #         return f"{self.name} пытался использовать {self.weapon.name}," \
-    #                f" но у него не хватило выносливости"
-    #
-    #     damage_from_weapon = uniform(self.weapon.min_damage, self.weapon.max_damage*10)
-    #     attacking_damage = round(damage_from_weapon * self.hero_type.attack, 1)
-    #
-    #     if other.stamina < other._armor.stamina_per_turn:
-    #         target_armor = 0.0
-    #     else:
-    #         target_armor = other._armor.defence * other.hero_type.armor
-    #
-    #     final_damage = attacking_damage - target_armor
-    #
-    #     other.health -= final_damage
-    #
-    #     self.stamina -= self.weapon.stamina_per_hit
-    #     other.stamina -= other._armor.stamina_per_turn
-    #
-    #     return ""
-    #     # return f"{self.name} атакует"
 
     def get_stamina_mod(self) -> float:
         return self.hero_type.get_stamina_mod()
@@ -136,13 +72,6 @@ class BaseUnit:
     def stamina_for_attack_enough(self) -> bool:
         return self.stamina >= self.weapon.stamina_per_hit
 
-
-class Unit(BaseUnit):
-    """
-    a hero unit
-    derived from BaseUnit in order to use BaseUnit type as arguments
-    """
-
     def _get_final_damage(self, other: BaseUnit) -> float:
         """
         calculates the final damage of an attack
@@ -151,12 +80,10 @@ class Unit(BaseUnit):
         damage_from_weapon = uniform(self.weapon.min_damage, self.weapon.max_damage)
         attacking_damage = round(damage_from_weapon * self.hero_type.attack, 1)
 
-        if other.stamina_for_defend_enough():
-            target_armor = other.armor.defence * other.hero_type.armor
-        else:
-            target_armor = 0.0
+        _armor = other.armor.defence * other.hero_type.armor
+        target_armor = _armor if other.stamina_for_defend_enough() else 0.0
 
-        return max(attacking_damage - target_armor, 0.0)
+        return round(max(attacking_damage - target_armor, 0.0), 1)
 
     def attack(self, other: BaseUnit) -> str:
         """
@@ -190,7 +117,6 @@ class Unit(BaseUnit):
         применение умения к цели (см. шаг IV)
         """
 
-        # TODO
         if self.skill_used:
             return "Навык уже использован"
 
@@ -198,13 +124,12 @@ class Unit(BaseUnit):
         if self.stamina >= self.hero_type.get_required_stamina():
             self.skill_used = True
             other.get_damage(self.hero_type.skill.damage)
-
             return (
                 f"{self.name} использует {self.hero_type.get_skill_name()}"
                 f" и наносит {self.hero_type.skill.damage} урона сопернику"
             )
         return (
-            f"{self.name} пыталтся использовать {self.hero_type.get_skill_name()},"
+            f"{self.name} пытался использовать {self.hero_type.get_skill_name()},"
             f" но у него не хватило выносливости"
         )
 
@@ -212,48 +137,73 @@ class Unit(BaseUnit):
 # unit = BaseUnit("", UnitClass(), 0.0, 0.0, "", "", False)
 
 
-class HumanPlayer(Unit):
+class HumanPlayer(BaseUnit):
     """
     A human player's class
     """
 
-    # def attack(self) -> str:
-    #     # TODO
-    #     return ""
 
-
-class CompPlayer(Unit):
+class CompPlayer(BaseUnit):
     """
     A computer player's class
     """
 
     def attack_or_use_skill(self, other: BaseUnit) -> str:
-        if (randint(1, 10) == 5) and not self.skill_used:  # 10% chance to use the hero's skill
+        if (
+            randint(1, 10) == 5
+        ) and not self.skill_used:  # 10% chance to use the hero's skill
             return self.use_skill(other)
         return self.attack(other)
 
-    # def attack(self) -> str:
-    #     if not self.skill_used:
-    #         self.use_skill()
-    #     # TODO
-    #     # if stamina is not enough:
-    #     #     return f"{self.name} пыталься использовать <название оружия>," \
-    #     #            f" но у него не хватило выносливости"
-    #     # if armor is breached:
-    #     return (
-    #         f"{self.name}, используя {self.weapon.name},"
-    #         f" пробивает {self.armor.name} соперника"
-    #         f" и наносит {self.get_damage()} урона"
-    #     )
-    #     # else:
-    #     #     return (
-    #     #         f"{self.name}, используя {self.weapon.name}, наносит удар, но <название брони>"
-    #     #         f"соперника его останавливает"
-    #     #     )
-
 
 if __name__ == "__main__":
-    hero_type = HumanPlayer("hero", "hero", 10.0, 10.0)
-    print(hero_type)
+    # pass
+    equipment = Equipment()
+
+    hero = HumanPlayer("Отважный герой", warrior, 10.0, 10.0)
+    hero.weapon = equipment.get_weapon("топорик")
+    hero.armor = equipment.get_armor("кожаная броня")
+    print(hero)
+
+    enemy = CompPlayer("Гнусный вор", thief, 10.0, 10.0)
+    enemy.weapon = equipment.get_weapon("ножик")
+    enemy.armor = equipment.get_armor("футболка")
+    print(enemy)
+
+    print("Turn #1")
+    print(hero.attack(enemy))
+    print(hero)
+    print(enemy)
+
+    print("Turn #2")
+    print(enemy.attack(hero))
+    print(hero)
+    print(enemy)
+
+    print("Turn #3")
+    print(hero.attack(enemy))
+    print(hero)
+    print(enemy)
+
+    print("Turn #4")
+    print(enemy.attack(hero))
+    print(hero)
+    print(enemy)
+
+    print("Turn #5")
+    print(hero.use_skill(enemy))
+    print(hero)
+    print(enemy)
+
+    print("Turn #6")
+    print(enemy.attack_or_use_skill(hero))
+    print(hero)
+    print(enemy)
+
+    print("Turn #7")
+    print(hero.use_skill(enemy))
+    print(hero)
+    print(enemy)
+
     # hero2 = BaseUnit("hero2", "hero2", 10.0, 10.0)
     # print(hero2)

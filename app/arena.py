@@ -60,7 +60,7 @@ class Arena(metaclass=SingletonMeta):
         self.enemy = enemy
         self.game_on = False
 
-    def start_game(self):
+    def start_game(self) -> None:
         # TODO
         # присваивает экземпляру класса Арена значение свойства Игрок и значение свойства Противник
         self.game_on = True
@@ -78,7 +78,7 @@ class Arena(metaclass=SingletonMeta):
         # и снова наступает ход игрока. Если нет, тогда метод «Проверка здоровья игроков» возвращает
         # строку с результатом боя.
 
-    def regenerate_stamina(self):
+    def regenerate_stamina(self) -> None:
         self.hero.stamina = self.stamina * self.hero.get_stamina_mod()
         self.enemy.stamina = self.stamina * self.enemy.get_stamina_mod()
 
