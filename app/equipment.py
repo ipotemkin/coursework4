@@ -2,11 +2,15 @@
 
 # from dataclasses import dataclass
 import sys
+import os
 import json
 from typing import List, Optional
 from pydantic.dataclasses import dataclass
 
 from app.const import EQUIPMENT_FILE
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+EQUIPMENT_FILE_WITH_PATH = os.path.join(BASE_DIR, EQUIPMENT_FILE)
 
 
 @dataclass
@@ -50,7 +54,7 @@ class Equipment:
     to interact with a character
     """
 
-    def __init__(self, file_name: str = EQUIPMENT_FILE):
+    def __init__(self, file_name: str = EQUIPMENT_FILE_WITH_PATH):
         # self.equipment = EquipmentData(**self._read_json(file_name))
         try:
             self.equipment = EquipmentData(**self._read_json(file_name))

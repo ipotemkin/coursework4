@@ -8,7 +8,7 @@ from app.equipment import Equipment
 from app.unit import HumanPlayer, CompPlayer
 from app.arena import Arena
 
-app = Flask("__main__")
+app = Flask(__name__)
 app.config["JSON_AS_ASCII"] = False
 app.url_map.strict_slashes = False
 app.config["ARENA"] = Arena()
