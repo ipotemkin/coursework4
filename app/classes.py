@@ -77,6 +77,13 @@ class UnitClass(ProUnitClass, metaclass=MetaUnitClass):
 
         return [instance.name for instance in cls.instances]
 
+    @classmethod
+    def get_unit_by_name(cls, name: str) -> Optional[ProUnitClass]:
+        for instance in cls.instances:
+            if instance.name == name:
+                return instance
+        return None
+
     # def __iter__(self):
     #     return (instance for instance in self.__class__.instances)
 

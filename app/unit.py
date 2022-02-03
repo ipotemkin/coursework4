@@ -19,7 +19,7 @@ class BaseUnit:
     """
 
     name: str
-    hero_type: UnitClass
+    unit_class: UnitClass
     health: float
     stamina: float
     _weapon: Optional[Weapon] = None
@@ -61,10 +61,10 @@ class BaseUnit:
         вычисление полученного урона персонажем (см. шаг IV)
         """
 
-        self.health -= damage
+        self.health = round(self.health - damage, 1)
 
     def get_stamina_mod(self) -> float:
-        return self.hero_type.get_stamina_mod()
+        return self.unit_class.get_stamina_mod()
 
     def stamina_for_defend_enough(self) -> bool:
         return self.stamina >= self.armor.stamina_per_turn
@@ -78,9 +78,9 @@ class BaseUnit:
         """
 
         damage_from_weapon = uniform(self.weapon.min_damage, self.weapon.max_damage)
-        attacking_damage = round(damage_from_weapon * self.hero_type.attack, 1)
+        attacking_damage = round(damage_from_weapon * self.unit_class.attack, 1)
 
-        _armor = other.armor.defence * other.hero_type.armor
+        _armor = other.armor.defence * other.unit_class.armor
         target_armor = _armor if other.stamina_for_defend_enough() else 0.0
 
         return round(max(attacking_damage - target_armor, 0.0), 1)
@@ -90,17 +90,39 @@ class BaseUnit:
         нанести удар (см. шаг IV)
         """
 
+        print(1)
+        print(f"attacking: stamina={self.stamina}, health={self.health}")
+        print(f"defending: stamina={other.stamina}, health={other.health}")
+
         if not self.stamina_for_attack_enough():
             return (
                 f"{self.name} пытался использовать {self.weapon.name},"
                 f" но у него не хватило выносливости"
             )
 
+        print(2)
+        print(f"attacking: stamina={self.stamina}, health={self.health}")
+        print(f"defending: stamina={other.stamina}, health={other.health}")
+
         final_damage = self._get_final_damage(other)
         other.get_damage(final_damage)
 
+        print(3)
+        print(f"attacking: stamina={self.stamina}, health={self.health}")
+        print(f"defending: stamina={other.stamina}, health={other.health}")
+
         self.stamina -= self.weapon.stamina_per_hit
+        print(4)
+        print(f"attacking: stamina={self.stamina}, health={self.health}")
+        print("self.weapon.stamina_per_hit:", self.weapon.stamina_per_hit)
+
         other.stamina -= other.armor.stamina_per_turn
+        print(5)
+        print(f"defending: stamina={other.stamina}, health={other.health}")
+        print("other.armor.stamina_per_turn:", other.armor.stamina_per_turn)
+
+        print("attacking:", self)
+        print("defending:", other)
 
         if final_damage > 0:
             return (
@@ -121,18 +143,23 @@ class BaseUnit:
             return "Навык уже использован"
 
         # if stamina is enough:
-        if self.stamina >= self.hero_type.get_required_stamina():
+        if self.stamina >= self.unit_class.get_required_stamina():
             self.skill_used = True
-            other.get_damage(self.hero_type.skill.damage)
+            other.get_damage(self.unit_class.skill.damage)
             return (
-                f"{self.name} использует {self.hero_type.get_skill_name()}"
-                f" и наносит {self.hero_type.skill.damage} урона сопернику"
+                f"{self.name} использует {self.unit_class.get_skill_name()}"
+                f" и наносит {self.unit_class.skill.damage} урона сопернику"
             )
         return (
-            f"{self.name} пытался использовать {self.hero_type.get_skill_name()},"
+            f"{self.name} пытался использовать {self.unit_class.get_skill_name()},"
             f" но у него не хватило выносливости"
         )
 
+    def regenerate_stamina(self, factor: float) -> None:
+        self.stamina = min(
+            round(self.stamina + factor * self.get_stamina_mod(), 1),
+            self.unit_class.max_stamina
+        )
 
 # unit = BaseUnit("", UnitClass(), 0.0, 0.0, "", "", False)
 

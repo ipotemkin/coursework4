@@ -4,7 +4,9 @@ from threading import Lock
 
 # , Thread
 
-from app.unit import HumanPlayer, CompPlayer
+from typing import Optional
+
+from app.unit import HumanPlayer, CompPlayer, BaseUnit
 from app.const import STAMINA_RECOVER_PER_TURN
 
 
@@ -51,13 +53,13 @@ class Arena(metaclass=SingletonMeta):
 
     def __init__(
         self,
-        hero: HumanPlayer,
-        enemy: CompPlayer,
+        # hero: HumanPlayer,
+        # enemy: CompPlayer,
         stamina: float = STAMINA_RECOVER_PER_TURN,
     ):
         self.stamina = stamina
-        self.hero = hero
-        self.enemy = enemy
+        self.hero: Optional[BaseUnit] = None
+        self.enemy: Optional[BaseUnit] = None
         self.game_on = False
 
     def start_game(self) -> None:
@@ -79,8 +81,14 @@ class Arena(metaclass=SingletonMeta):
         # строку с результатом боя.
 
     def regenerate_stamina(self) -> None:
-        self.hero.stamina = self.stamina * self.hero.get_stamina_mod()
-        self.enemy.stamina = self.stamina * self.enemy.get_stamina_mod()
+        # self.hero.stamina = round(self.hero.stamina + self.stamina * self.hero.get_stamina_mod(), 1)
+        # print("self.enemy.stamina:", self.enemy.stamina)
+        # self.enemy.stamina = round(self.enemy.stamina + self.stamina * self.enemy.get_stamina_mod(), 1)
+        # print("self.stamina:", self.stamina)
+        # print("self.enemy.get_stamina_mod():", self.enemy.get_stamina_mod())
+        # print("self.enemy.stamina:", self.enemy.stamina)
+        self.hero.regenerate_stamina(self.stamina)
+        self.enemy.regenerate_stamina(self.stamina)
 
         # - Прибавляем к очкам выносливости атакующего константу, умноженную на модификатор
         # выносливости **атакующего.**
