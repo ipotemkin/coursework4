@@ -1,12 +1,14 @@
 """ Contains SingleTone and Arena"""
 
+from __future__ import annotations
+
 from threading import Lock
 
 # , Thread
 
-from typing import Optional
+from typing import Optional, Dict, Any
 
-from app.unit import HumanPlayer, CompPlayer, BaseUnit
+from app.unit import HumanPlayer, CompPlayer
 from app.const import STAMINA_RECOVER_PER_TURN
 
 
@@ -15,7 +17,7 @@ class SingletonMeta(type):
     Это потокобезопасная реализация класса Singleton.
     """
 
-    _instances = {}
+    _instances: Dict[SingletonMeta, SingletonMeta] = {}
 
     _lock: Lock = Lock()
     """
@@ -23,7 +25,7 @@ class SingletonMeta(type):
     первого доступа к Одиночке.
     """
 
-    def __call__(cls, *args, **kwargs):
+    def __call__(cls, *args: Any, **kwargs: Any) -> SingletonMeta:
         """
         Данная реализация не учитывает возможное изменение передаваемых
         аргументов в `__init__`.
@@ -58,8 +60,8 @@ class Arena(metaclass=SingletonMeta):
         stamina: float = STAMINA_RECOVER_PER_TURN,
     ):
         self.stamina = stamina
-        self.hero: Optional[BaseUnit] = None
-        self.enemy: Optional[BaseUnit] = None
+        self.hero: Optional[HumanPlayer] = None
+        self.enemy: Optional[CompPlayer] = None
         self.game_on = False
 
     def start_game(self) -> None:
@@ -81,12 +83,6 @@ class Arena(metaclass=SingletonMeta):
         # строку с результатом боя.
 
     def regenerate_stamina(self) -> None:
-        # self.hero.stamina = round(self.hero.stamina + self.stamina * self.hero.get_stamina_mod(), 1)
-        # print("self.enemy.stamina:", self.enemy.stamina)
-        # self.enemy.stamina = round(self.enemy.stamina + self.stamina * self.enemy.get_stamina_mod(), 1)
-        # print("self.stamina:", self.stamina)
-        # print("self.enemy.get_stamina_mod():", self.enemy.get_stamina_mod())
-        # print("self.enemy.stamina:", self.enemy.stamina)
         self.hero.regenerate_stamina(self.stamina)
         self.enemy.regenerate_stamina(self.stamina)
 
@@ -95,17 +91,41 @@ class Arena(metaclass=SingletonMeta):
         # - Прибавляем к очкам выносливости цели константу, умноженную на модификатор
         # выносливости **цели.**
 
-    def check_health(self) -> bool:
-        return (self.hero.health > 0.0) and (self.enemy.health > 0.0)
+    def check_health(self) -> str:
+        if (self.hero.health > 0.0) and (self.enemy.health > 0.0):
+            return ""
+        self.game_on = False
+        if (self.hero.health < 0.0) and (self.enemy.health < 0.0):
+            return ". Ничья"
+        if self.enemy.health < 0.0:
+            return ". Победил Игрок"
+        return ". Победил Противник"
 
-    def end_game(self) -> str:
-        # TODO
-        return "Game results"
+    @staticmethod
+    def end_game() -> str:
+        return "Бой окончен!"
 
     def attack(self) -> str:
-        self.next_turn()
-        return "Results"
+        if not self.game_on:
+            return self.end_game()
+        res = self.hero.attack(self.enemy)
+        return self.complete_turn(res)
 
     def use_skill(self) -> str:
-        self.next_turn()
-        return "Results"
+        if not self.game_on:
+            return self.end_game()
+        res = self.hero.use_skill(self.enemy)
+        return self.complete_turn(res)
+
+    def skip_turn(self) -> str:
+        return self.complete_turn("")
+
+    def complete_turn(self, res: str) -> str:
+        if check_msg := self.check_health():
+            return res + check_msg
+        self.regenerate_stamina()
+        res += self.enemy.attack_or_use_skill(self.hero)
+        if check_msg := self.check_health():
+            return res + check_msg
+        self.regenerate_stamina()
+        return res

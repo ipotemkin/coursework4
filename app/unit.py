@@ -90,39 +90,17 @@ class BaseUnit:
         нанести удар (см. шаг IV)
         """
 
-        print(1)
-        print(f"attacking: stamina={self.stamina}, health={self.health}")
-        print(f"defending: stamina={other.stamina}, health={other.health}")
-
         if not self.stamina_for_attack_enough():
             return (
                 f"{self.name} пытался использовать {self.weapon.name},"
                 f" но у него не хватило выносливости"
             )
 
-        print(2)
-        print(f"attacking: stamina={self.stamina}, health={self.health}")
-        print(f"defending: stamina={other.stamina}, health={other.health}")
-
         final_damage = self._get_final_damage(other)
         other.get_damage(final_damage)
 
-        print(3)
-        print(f"attacking: stamina={self.stamina}, health={self.health}")
-        print(f"defending: stamina={other.stamina}, health={other.health}")
-
         self.stamina -= self.weapon.stamina_per_hit
-        print(4)
-        print(f"attacking: stamina={self.stamina}, health={self.health}")
-        print("self.weapon.stamina_per_hit:", self.weapon.stamina_per_hit)
-
         other.stamina -= other.armor.stamina_per_turn
-        print(5)
-        print(f"defending: stamina={other.stamina}, health={other.health}")
-        print("other.armor.stamina_per_turn:", other.armor.stamina_per_turn)
-
-        print("attacking:", self)
-        print("defending:", other)
 
         if final_damage > 0:
             return (
@@ -158,10 +136,8 @@ class BaseUnit:
     def regenerate_stamina(self, factor: float) -> None:
         self.stamina = min(
             round(self.stamina + factor * self.get_stamina_mod(), 1),
-            self.unit_class.max_stamina
+            self.unit_class.max_stamina,
         )
-
-# unit = BaseUnit("", UnitClass(), 0.0, 0.0, "", "", False)
 
 
 class HumanPlayer(BaseUnit):
@@ -184,7 +160,6 @@ class CompPlayer(BaseUnit):
 
 
 if __name__ == "__main__":
-    # pass
     equipment = Equipment()
 
     hero = HumanPlayer("Отважный герой", warrior, 10.0, 10.0)

@@ -5,6 +5,8 @@ This module contains classes for heroes' types (to not confuse with python class
 3. UnitClass - a base class to build heroes' types
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Optional, List, Generator, Any
 
@@ -48,7 +50,7 @@ class MetaUnitClass(type):
     A metaclass to provide child classes with iteration and length calculation
     """
 
-    instances: List[ProUnitClass] = []
+    instances: List[UnitClass] = []
 
     def __getitem__(cls, index: int) -> ProUnitClass:
         return cls.instances[index]
@@ -78,7 +80,7 @@ class UnitClass(ProUnitClass, metaclass=MetaUnitClass):
         return [instance.name for instance in cls.instances]
 
     @classmethod
-    def get_unit_by_name(cls, name: str) -> Optional[ProUnitClass]:
+    def get_unit_by_name(cls, name: str) -> Optional[UnitClass]:
         for instance in cls.instances:
             if instance.name == name:
                 return instance
