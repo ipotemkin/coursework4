@@ -93,7 +93,7 @@ class BaseUnit:
         if not self.stamina_for_attack_enough():
             return (
                 f"{self.name} пытался использовать {self.weapon.name},"
-                f" но у него не хватило выносливости"
+                f" но у него не хватило выносливости. "
             )
 
         final_damage = self._get_final_damage(other)
@@ -105,11 +105,11 @@ class BaseUnit:
         if final_damage > 0:
             return (
                 f"{self.name}, используя {self.weapon.name},"
-                f" пробивает {other.armor.name} соперника и наносит {final_damage} урона"
+                f" пробивает {other.armor.name} соперника и наносит {final_damage} урона. "
             )
         return (
             f"{self.name}, используя {self.weapon.name}, наносит удар,"
-            f" но {other.armor.name} соперника его останавливает"
+            f" но {other.armor.name} соперника его останавливает. "
         )
 
     def use_skill(self, other: BaseUnit) -> str:
@@ -118,7 +118,7 @@ class BaseUnit:
         """
 
         if self.skill_used:
-            return "Навык уже использован"
+            return "Навык уже использован. "
 
         # if stamina is enough:
         if self.stamina >= self.unit_class.get_required_stamina():
@@ -126,11 +126,11 @@ class BaseUnit:
             other.get_damage(self.unit_class.skill.damage)
             return (
                 f"{self.name} использует {self.unit_class.get_skill_name()}"
-                f" и наносит {self.unit_class.skill.damage} урона сопернику"
+                f" и наносит {self.unit_class.skill.damage} урона сопернику. "
             )
         return (
             f"{self.name} пытался использовать {self.unit_class.get_skill_name()},"
-            f" но у него не хватило выносливости"
+            f" но у него не хватило выносливости. "
         )
 
     def regenerate_stamina(self, factor: float) -> None:
@@ -159,6 +159,7 @@ class CompPlayer(BaseUnit):
         return self.attack(other)
 
 
+# for debug only
 if __name__ == "__main__":
     equipment = Equipment()
 
