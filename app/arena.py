@@ -107,12 +107,14 @@ class Arena(metaclass=SingletonMeta):
     def skip_turn(self) -> str:
         return self.complete_turn("")
 
-    def complete_turn(self, res: str) -> str:
-        if check_msg := self.check_health():
-            return res + check_msg
-        self.regenerate_stamina()
-        res += self.enemy.attack_or_use_skill(self.hero)
+    def check_health_and_regenerate(self, res: str):
         if check_msg := self.check_health():
             return res + check_msg
         self.regenerate_stamina()
         return res
+
+    def complete_turn(self, res: str) -> str:
+        res = self.check_health_and_regenerate(res)
+        res += self.enemy.attack_or_use_skill(self.hero)
+        return self.check_health_and_regenerate(res)
+
