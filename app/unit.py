@@ -151,7 +151,7 @@ class CompPlayer(BaseUnit):
     A computer player's class
     """
 
-    def attack_or_use_skill(self, other: BaseUnit) -> str:
+    def attack_or_use_skill(self, other: HumanPlayer) -> str:
         if (
             randint(1, 10) == 5
         ) and not self.skill_used:  # 10% chance to use the hero's skill

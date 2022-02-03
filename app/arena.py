@@ -69,19 +69,6 @@ class Arena(metaclass=SingletonMeta):
         # присваивает экземпляру класса Арена значение свойства Игрок и значение свойства Противник
         self.game_on = True
 
-    def next_turn(self) -> str:
-        # проверка, осталось ли еще здоровье у игроков.
-        if self.check_health():
-            self.regenerate_stamina()
-            # TODO
-            # противник наносит удар
-            # и снова наступает ход игрока
-            return ""
-        return self.end_game()
-        # Если да, тогда происходит восстановление выносливости игроков, противник наносит удар,
-        # и снова наступает ход игрока. Если нет, тогда метод «Проверка здоровья игроков» возвращает
-        # строку с результатом боя.
-
     def regenerate_stamina(self) -> None:
         self.hero.regenerate_stamina(self.stamina)
         self.enemy.regenerate_stamina(self.stamina)

@@ -24,6 +24,8 @@ def prepare_form_data(header: str):
 
 
 def render_fighting_screen(func: Union[str, callable]):
+    if not ARENA.hero or not ARENA.enemy:
+        return redirect("/")
     return render_template(
         "fight.html",
         heroes={"player": ARENA.hero, "enemy": ARENA.enemy},
@@ -39,7 +41,8 @@ def index():
 @app.route("/choose-hero/", methods=["GET"])
 def choose_hero():
     if ARENA.game_on:
-        return "Вы опоздали, игра уже идет!"
+        # return "Вы опоздали, игра уже идет!"
+        return render_template("ongoing.html")
     ARENA.game_on = True
     return render_template("hero_choosing.html", result=prepare_form_data("Выберите героя"))
 
@@ -61,6 +64,8 @@ def choose_hero_post():
 
 @app.route("/choose-enemy/", methods=["GET"])
 def choose_enemy():
+    if not ARENA.hero:
+        return redirect("/")
     return render_template("hero_choosing.html", result=prepare_form_data("Выберите противника"))
 
 
@@ -81,11 +86,15 @@ def choose_enemy_post():
 
 @app.route("/fight/")
 def fight():
+    # if not ARENA.hero or not ARENA.enemy:
+    #     return redirect("/")
     return render_fighting_screen("Бой начался!")
 
 
 @app.route("/fight/hit")
 def fight_hit():
+    # if not ARENA.hero or not ARENA.enemy:
+    #     return redirect("/")
     return render_fighting_screen(ARENA.attack)
 
 
