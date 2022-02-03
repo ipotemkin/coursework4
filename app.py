@@ -10,6 +10,7 @@ from app.arena import Arena
 
 app = Flask("__main__")
 app.config["JSON_AS_ASCII"] = False
+app.url_map.strict_slashes = False
 equipment = Equipment()
 ARENA = Arena()
 
@@ -41,7 +42,6 @@ def index():
 @app.route("/choose-hero/", methods=["GET"])
 def choose_hero():
     if ARENA.game_on:
-        # return "Вы опоздали, игра уже идет!"
         return render_template("ongoing.html")
     ARENA.game_on = True
     return render_template("hero_choosing.html", result=prepare_form_data("Выберите героя"))
@@ -50,7 +50,7 @@ def choose_hero():
 @app.route("/choose-hero/", methods=["POST"])
 def choose_hero_post():
     hero_type = UnitClass.get_unit_by_name(request.form["unit_class"])
-    hero = HumanPlayer(
+    ARENA.hero = HumanPlayer(
         name=request.form["name"],
         unit_class=hero_type,
         health=hero_type.max_health,
@@ -58,7 +58,6 @@ def choose_hero_post():
         _weapon=equipment.get_weapon(request.form["weapon"]),
         _armor=equipment.get_armor(request.form["armor"]),
     )
-    ARENA.hero = hero
     return redirect('/choose-enemy/')
 
 
@@ -72,7 +71,7 @@ def choose_enemy():
 @app.route("/choose-enemy/", methods=["POST"])
 def choose_enemy_post():
     hero_type = UnitClass.get_unit_by_name(request.form["unit_class"])
-    hero = CompPlayer(
+    ARENA.enemy = CompPlayer(
         name=request.form["name"],
         unit_class=hero_type,
         health=hero_type.max_health,
@@ -80,21 +79,16 @@ def choose_enemy_post():
         _weapon=equipment.get_weapon(request.form["weapon"]),
         _armor=equipment.get_armor(request.form["armor"]),
     )
-    ARENA.enemy = hero
     return redirect("/fight/")
 
 
 @app.route("/fight/")
 def fight():
-    # if not ARENA.hero or not ARENA.enemy:
-    #     return redirect("/")
     return render_fighting_screen("Бой начался!")
 
 
 @app.route("/fight/hit")
 def fight_hit():
-    # if not ARENA.hero or not ARENA.enemy:
-    #     return redirect("/")
     return render_fighting_screen(ARENA.attack)
 
 
