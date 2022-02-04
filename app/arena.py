@@ -58,8 +58,10 @@ class Arena(metaclass=SingletonMeta):
         return "Бой окончен!"
 
     def regenerate_stamina(self) -> None:
-        self.hero.regenerate_stamina(self.stamina)
-        self.enemy.regenerate_stamina(self.stamina)
+        if not isinstance(self.hero, type(NotImplemented)):
+            self.hero.regenerate_stamina(self.stamina)
+        if not isinstance(self.enemy, type(NotImplemented)):
+            self.enemy.regenerate_stamina(self.stamina)
 
         # - Прибавляем к очкам выносливости атакующего константу, умноженную на модификатор
         # выносливости **атакующего.**
@@ -67,14 +69,17 @@ class Arena(metaclass=SingletonMeta):
         # выносливости **цели.**
 
     def check_health(self) -> str:
-        if (self.hero.health > 0.0) and (self.enemy.health > 0.0):
-            return ""
-        self.game_on = False
-        if (self.hero.health < 0.0) and (self.enemy.health < 0.0):
-            return "Ничья"
-        if self.enemy.health < 0.0:
-            return "Победил Игрок"
-        return "Победил Противник"
+        try:
+            if (self.hero.health > 0.0) and (self.enemy.health > 0.0):
+                return ""
+            self.game_on = False
+            if (self.hero.health < 0.0) and (self.enemy.health < 0.0):
+                return "Ничья"
+            if self.enemy.health < 0.0:
+                return "Победил Игрок"
+            return "Победил Противник"
+        except AttributeError:
+            raise NotImplementedError
 
     def check_health_and_regenerate(self, res: str) -> str:
         if check_msg := self.check_health():
@@ -83,20 +88,29 @@ class Arena(metaclass=SingletonMeta):
         return res
 
     def complete_turn(self, res: str) -> str:
-        res = self.check_health_and_regenerate(res)
-        res += self.enemy.attack_or_use_skill(self.hero)
-        return self.check_health_and_regenerate(res)
+        try:
+            res = self.check_health_and_regenerate(res)
+            res += self.enemy.attack_or_use_skill(self.hero)
+            return self.check_health_and_regenerate(res)
+        except AttributeError:
+            raise NotImplementedError
 
     def attack(self) -> str:
         if not self.game_on:
             return self.end_game()
-        res = self.hero.attack(self.enemy)
+        try:
+            res = self.hero.attack(self.enemy)
+        except AttributeError:
+            raise NotImplementedError
         return self.complete_turn(res)
 
     def use_skill(self) -> str:
         if not self.game_on:
             return self.end_game()
-        res = self.hero.use_skill(self.enemy)
+        try:
+            res = self.hero.use_skill(self.enemy)
+        except AttributeError:
+            raise NotImplementedError
         return self.complete_turn(res)
 
     def skip_turn(self) -> str:
