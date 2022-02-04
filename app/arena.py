@@ -78,8 +78,8 @@ class Arena(metaclass=SingletonMeta):
             if self.enemy.health < 0.0:
                 return "Победил Игрок"
             return "Победил Противник"
-        except AttributeError:
-            raise NotImplementedError
+        except AttributeError as error:
+            raise NotImplementedError from error
 
     def check_health_and_regenerate(self, res: str) -> str:
         if check_msg := self.check_health():
@@ -92,16 +92,16 @@ class Arena(metaclass=SingletonMeta):
             res = self.check_health_and_regenerate(res)
             res += self.enemy.attack_or_use_skill(self.hero)
             return self.check_health_and_regenerate(res)
-        except AttributeError:
-            raise NotImplementedError
+        except AttributeError as error:
+            raise NotImplementedError from error
 
     def attack(self) -> str:
         if not self.game_on:
             return self.end_game()
         try:
             res = self.hero.attack(self.enemy)
-        except AttributeError:
-            raise NotImplementedError
+        except AttributeError as error:
+            raise NotImplementedError from error
         return self.complete_turn(res)
 
     def use_skill(self) -> str:
@@ -109,8 +109,8 @@ class Arena(metaclass=SingletonMeta):
             return self.end_game()
         try:
             res = self.hero.use_skill(self.enemy)
-        except AttributeError:
-            raise NotImplementedError
+        except AttributeError as error:
+            raise NotImplementedError from error
         return self.complete_turn(res)
 
     def skip_turn(self) -> str:
