@@ -1,7 +1,5 @@
 """Sets up a hero's logics"""
 
-# from abc import ABC, abstractmethod
-
 from __future__ import annotations
 from dataclasses import dataclass
 
@@ -63,12 +61,24 @@ class BaseUnit:
         self.health = round(self.health - damage, 1)
 
     def get_stamina_mod(self) -> float:
+        """
+        to get stamina modifier
+        """
+
         return self.unit_class.get_stamina_mod()
 
     def stamina_for_defend_enough(self) -> bool:
+        """
+        checks whether stamina for defend is enough
+        """
+
         return self.stamina >= self.armor.stamina_per_turn
 
     def stamina_for_attack_enough(self) -> bool:
+        """
+        checks whether stamina for attack is enough
+        """
+
         return self.stamina >= self.weapon.stamina_per_hit
 
     def _get_final_damage(self, other: BaseUnit) -> float:
@@ -133,6 +143,10 @@ class BaseUnit:
         )
 
     def regenerate_stamina(self, factor: float) -> None:
+        """
+        to regenerate the player's stamina
+        """
+
         self.stamina = min(
             round(self.stamina + factor * self.get_stamina_mod(), 1),
             self.unit_class.max_stamina,
@@ -151,6 +165,10 @@ class CompPlayer(BaseUnit):
     """
 
     def attack_or_use_skill(self, other: HumanPlayer) -> str:
+        """
+        to conduct the comp player's attack or skill usage
+        """
+
         if (
             randint(1, 10) == 5
         ) and not self.skill_used:  # 10% chance to use the hero's skill

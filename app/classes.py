@@ -28,21 +28,25 @@ class ProUnitClass:
     skill: ConcreteSkill = NotImplemented
 
     def get_stamina_mod(self) -> float:
+        """
+        to get a stamina modifier
+        """
+
         return self.stamina_mod
 
     def get_required_stamina(self) -> float:
+        """
+        to get a required stamina of the skill
+        """
+
         return self.skill.get_required_stamina()
 
     def get_skill_name(self) -> str:
-        return self.skill.get_skill_name()
+        """
+        to get the skill name
+        """
 
-    # @property
-    # def stamina_mod(self):
-    #     return self._stamina_mod
-    #
-    # @stamina_mod.setter
-    # def stamina_mod(self, new_stamina):
-    #     self._stamina_mod = new_stamina
+        return self.skill.get_skill_name()
 
 
 class MetaUnitClass(type):
@@ -81,20 +85,17 @@ class UnitClass(ProUnitClass, metaclass=MetaUnitClass):
 
     @classmethod
     def get_unit_by_name(cls, name: str) -> Optional[UnitClass]:
+        """
+        To get a instance with the specified name
+        """
+
         for instance in cls.instances:
             if instance.name == name:
                 return instance
         return None
 
-    # def __iter__(self):
-    #     return (instance for instance in self.__class__.instances)
 
-    # def __len__(self):
-    #     return len(self.items)
-    #
-    # def __getitem__(self, item):
-    #     return self.items[item]
-
+# heroes types (classes) implementation ---------------------------------------------
 
 ferocious_kick = ConcreteSkill(name="Свирепый пинок", damage=12.0, stamina=6.0)
 stiff_shot = ConcreteSkill(name="Мощный укол", damage=15.0, stamina=5.0)
@@ -130,6 +131,7 @@ thief = UnitClass(
     skill=tickling,
 )
 
+# for debug only
 if __name__ == "__main__":
     print([item.name for item in UnitClass.instances])
     print(UnitClass[0])

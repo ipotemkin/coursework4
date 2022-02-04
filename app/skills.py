@@ -37,9 +37,17 @@ class Skill(ABC):
         # но у него не хватило выносливости."
 
     def get_required_stamina(self) -> float:
+        """
+        returns the skill's stamina required
+        """
+
         return self.required_stamina
 
     def get_skill_name(self) -> str:
+        """
+        returns the skill's name
+        """
+
         return self.name
 
 

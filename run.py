@@ -1,6 +1,6 @@
 """This module contains a flask app"""
 
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for
 from typing import Union
 
 from app.classes import UnitClass
@@ -11,11 +11,15 @@ from app.arena import Arena
 app = Flask(__name__)
 app.config["JSON_AS_ASCII"] = False
 app.url_map.strict_slashes = False
-app.config["ARENA"] = Arena()
-app.config["EQUIPMENT"] = Equipment()
+app.config["ARENA"] = Arena()  # to store the arena
+app.config["EQUIPMENT"] = Equipment()  # to store the equipment
 
 
 def prepare_form_data(header: str):
+    """
+    to prepare data for a player form to fulfil
+    """
+
     return {
         "header": header,
         "classes": UnitClass.get_unit_names(),
@@ -25,8 +29,12 @@ def prepare_form_data(header: str):
 
 
 def render_fighting_screen(func: Union[str, callable]):
+    """
+    renders the fighting screen depending from the args
+    """
+
     if not app.config["ARENA"].hero or not app.config["ARENA"].enemy:
-        return redirect("/")
+        return redirect(url_for("index"))
     return render_template(
         "fight.html",
         heroes={"player": app.config["ARENA"].hero, "enemy": app.config["ARENA"].enemy},
@@ -58,7 +66,7 @@ def choose_hero_post():
         _weapon=app.config["EQUIPMENT"].get_weapon(request.form["weapon"]),
         _armor=app.config["EQUIPMENT"].get_armor(request.form["armor"]),
     )
-    return redirect('/choose-enemy/')
+    return redirect(url_for("choose_enemy"))
 
 
 @app.route("/choose-enemy/", methods=["GET"])
@@ -79,7 +87,7 @@ def choose_enemy_post():
         _weapon=app.config["EQUIPMENT"].get_weapon(request.form["weapon"]),
         _armor=app.config["EQUIPMENT"].get_armor(request.form["armor"]),
     )
-    return redirect("/fight/")
+    return redirect(url_for('fight'))
 
 
 @app.route("/fight/")
@@ -105,7 +113,7 @@ def fight_pass_turn():
 @app.route("/fight/end-fight")
 def fight_end_fight():
     app.config["ARENA"].end_game()
-    return redirect("/")
+    return redirect(url_for("index"))
 
 
 if __name__ == "__main__":
