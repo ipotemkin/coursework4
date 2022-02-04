@@ -72,7 +72,8 @@ class Arena(metaclass=SingletonMeta):
         try:
             if (self.hero.health > 0.0) and (self.enemy.health > 0.0):
                 return ""
-            self.game_on = False
+            # self.game_on = False
+            self.end_game()
             if (self.hero.health < 0.0) and (self.enemy.health < 0.0):
                 return "Ничья"
             if self.enemy.health < 0.0:
@@ -90,8 +91,10 @@ class Arena(metaclass=SingletonMeta):
     def complete_turn(self, res: str) -> str:
         try:
             res = self.check_health_and_regenerate(res)
-            res += self.enemy.attack_or_use_skill(self.hero)
-            return self.check_health_and_regenerate(res)
+            if self.is_game_on():
+                res += self.enemy.attack_or_use_skill(self.hero)
+                return self.check_health_and_regenerate(res)
+            return res
         except AttributeError as error:
             raise NotImplementedError from error
 
@@ -105,7 +108,7 @@ class Arena(metaclass=SingletonMeta):
         return self.complete_turn(res)
 
     def use_skill(self) -> str:
-        if not self.game_on:
+        if not self.is_game_on():
             return self.end_game()
         try:
             res = self.hero.use_skill(self.enemy)
