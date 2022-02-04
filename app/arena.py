@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from threading import Lock
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 
 from app.unit import HumanPlayer, CompPlayer
 from app.const import STAMINA_RECOVER_PER_TURN
@@ -41,8 +41,8 @@ class Arena(metaclass=SingletonMeta):
 
     def __init__(self, stamina: float = STAMINA_RECOVER_PER_TURN):
         self.stamina = stamina
-        self.hero: Optional[HumanPlayer] = None
-        self.enemy: Optional[CompPlayer] = None
+        self.hero: HumanPlayer = NotImplemented
+        self.enemy: CompPlayer = NotImplemented
         self.game_on = False
 
     def start_game(self) -> None:
@@ -76,7 +76,7 @@ class Arena(metaclass=SingletonMeta):
             return "Победил Игрок"
         return "Победил Противник"
 
-    def check_health_and_regenerate(self, res: str):
+    def check_health_and_regenerate(self, res: str) -> str:
         if check_msg := self.check_health():
             return res + check_msg
         self.regenerate_stamina()

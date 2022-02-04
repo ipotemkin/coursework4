@@ -4,7 +4,7 @@
 import sys
 import os
 import json
-from typing import List, Optional
+from typing import List
 from pydantic.dataclasses import dataclass
 
 from app.const import EQUIPMENT_FILE
@@ -73,7 +73,7 @@ class Equipment:
             sys.exit(1)
         return data
 
-    def get_weapon(self, weapon_name: str) -> Optional[Weapon]:
+    def get_weapon(self, weapon_name: str) -> Weapon:
         """
         returns a weapon with the specified name
         """
@@ -81,9 +81,9 @@ class Equipment:
         for weapon in self.equipment.weapons:
             if weapon.name == weapon_name:
                 return weapon
-        return None
+        return NotImplemented
 
-    def get_armor(self, armor_name: str) -> Optional[Armor]:
+    def get_armor(self, armor_name: str) -> Armor:
         """
         returns an armor with the specified name
         """
@@ -91,7 +91,7 @@ class Equipment:
         for armor in self.equipment.armors:
             if armor.name == armor_name:
                 return armor
-        return None
+        return NotImplemented
 
     def get_weapon_names(self) -> list:
         """

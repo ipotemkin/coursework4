@@ -4,7 +4,6 @@
 
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Optional
 
 from random import uniform, randint
 
@@ -22,12 +21,12 @@ class BaseUnit:
     unit_class: UnitClass
     health: float
     stamina: float
-    _weapon: Optional[Weapon] = None
-    _armor: Optional[Armor] = None
+    _weapon: Weapon = NotImplemented
+    _armor: Armor = NotImplemented
     skill_used: bool = False
 
     @property
-    def weapon(self) -> Optional[Weapon]:
+    def weapon(self) -> Weapon:
         """
         a weapon getter
         """
@@ -42,7 +41,7 @@ class BaseUnit:
             print("Not a valid instance of Weapon")
 
     @property
-    def armor(self) -> Optional[Armor]:
+    def armor(self) -> Armor:
         """
         an armor getter
         """

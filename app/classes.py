@@ -25,16 +25,16 @@ class ProUnitClass:
     attack: float  # модификатор атаки
     stamina_mod: float  # модификатор выносливости
     armor: float  # модификатор защиты
-    skill: Optional[ConcreteSkill] = None
+    skill: ConcreteSkill = NotImplemented
 
     def get_stamina_mod(self) -> float:
         return self.stamina_mod
 
-    def get_required_stamina(self) -> Optional[float]:
-        return self.skill.get_required_stamina() if self.skill else None
+    def get_required_stamina(self) -> float:
+        return self.skill.get_required_stamina()
 
-    def get_skill_name(self) -> Optional[str]:
-        return self.skill.get_skill_name() if self.skill else None
+    def get_skill_name(self) -> str:
+        return self.skill.get_skill_name()
 
     # @property
     # def stamina_mod(self):
