@@ -8,7 +8,7 @@ This module contains classes for heroes' types (to not confuse with python class
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional, List, Generator, Any
+from typing import List, Generator, Any
 
 from app.skills import ConcreteSkill
 
@@ -84,7 +84,7 @@ class UnitClass(ProUnitClass, metaclass=MetaUnitClass):
         return [instance.name for instance in cls.instances]
 
     @classmethod
-    def get_unit_by_name(cls, name: str) -> Optional[UnitClass]:
+    def get_unit_by_name(cls, name: str) -> UnitClass:
         """
         To get a instance with the specified name
         """
@@ -92,7 +92,7 @@ class UnitClass(ProUnitClass, metaclass=MetaUnitClass):
         for instance in cls.instances:
             if instance.name == name:
                 return instance
-        return None
+        return NotImplemented
 
 
 # heroes types (classes) implementation ---------------------------------------------
