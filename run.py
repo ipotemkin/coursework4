@@ -48,6 +48,19 @@ def render_fighting_screen(func: Union[str, Callable]) -> Union[str, Response]:
     )
 
 
+def make_personage(
+    class_name: Callable, name: str, hero_type: UnitClass
+) -> Union[HumanPlayer, CompPlayer]:
+    return class_name(
+        name=name,
+        unit_class=hero_type,
+        health=hero_type.max_health,
+        stamina=hero_type.max_stamina,
+        _weapon=app.config["EQUIPMENT"].get_weapon(request.form["weapon"]),
+        _armor=app.config["EQUIPMENT"].get_armor(request.form["armor"]),
+    )
+
+
 @app.route("/")
 def index() -> str:
     return render_template("index.html")
@@ -65,14 +78,10 @@ def choose_hero() -> Union[str, Response]:
 
 @app.route("/choose-hero/", methods=["POST"])
 def choose_hero_post() -> Response:
-    hero_type = UnitClass.get_unit_by_name(request.form["unit_class"])
-    app.config["ARENA"].hero = HumanPlayer(
-        name=request.form["name"],
-        unit_class=hero_type,
-        health=hero_type.max_health,
-        stamina=hero_type.max_stamina,
-        _weapon=app.config["EQUIPMENT"].get_weapon(request.form["weapon"]),
-        _armor=app.config["EQUIPMENT"].get_armor(request.form["armor"]),
+    app.config["ARENA"].hero = make_personage(
+        HumanPlayer,
+        request.form["name"],
+        UnitClass.get_unit_by_name(request.form["unit_class"]),
     )
     return redirect(url_for("choose_enemy"))
 
@@ -88,14 +97,10 @@ def choose_enemy() -> Union[str, Response]:
 
 @app.route("/choose-enemy/", methods=["POST"])
 def choose_enemy_post() -> Response:
-    hero_type = UnitClass.get_unit_by_name(request.form["unit_class"])
-    app.config["ARENA"].enemy = CompPlayer(
-        name=request.form["name"],
-        unit_class=hero_type,
-        health=hero_type.max_health,
-        stamina=hero_type.max_stamina,
-        _weapon=app.config["EQUIPMENT"].get_weapon(request.form["weapon"]),
-        _armor=app.config["EQUIPMENT"].get_armor(request.form["armor"]),
+    app.config["ARENA"].enemy = make_personage(
+        CompPlayer,
+        request.form["name"],
+        UnitClass.get_unit_by_name(request.form["unit_class"]),
     )
     return redirect(url_for("fight"))
 
