@@ -1,10 +1,8 @@
 """This module contains equipment classes for the application"""
 
-# from dataclasses import dataclass
 import sys
 import os
 import json
-from typing import List
 from pydantic.dataclasses import dataclass
 
 from app.const import EQUIPMENT_FILE
@@ -44,8 +42,8 @@ class EquipmentData:
     to store the parsed equipment data
     """
 
-    weapons: List[Weapon]
-    armors: List[Armor]
+    weapons: list[Weapon]
+    armors: list[Armor]
 
 
 class Equipment:
@@ -55,9 +53,8 @@ class Equipment:
     """
 
     def __init__(self, file_name: str = EQUIPMENT_FILE_WITH_PATH):
-        # self.equipment = EquipmentData(**self._read_json(file_name))
         try:
-            self.equipment = EquipmentData(**self._read_json(file_name))
+            self.equipment: EquipmentData = EquipmentData(**self._read_json(file_name))
         except (TypeError, AttributeError) as error:
             print("Error while parsing the JSON file:", error)
             # raise ValueError

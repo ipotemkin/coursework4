@@ -8,7 +8,7 @@ This module contains classes for heroes' types (to not confuse with python class
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Generator, Any
+from typing import Generator, Any
 
 from app.skills import ConcreteSkill
 
@@ -41,12 +41,13 @@ class ProUnitClass:
 
         return self.skill.get_required_stamina()
 
-    def get_skill_name(self) -> str:
+    @property
+    def skill_name(self) -> str:
         """
         to get the skill name
         """
 
-        return self.skill.get_skill_name()
+        return self.skill.get_name()
 
 
 class MetaUnitClass(type):
@@ -54,7 +55,7 @@ class MetaUnitClass(type):
     A metaclass to provide child classes with iteration and length calculation
     """
 
-    instances: List[UnitClass] = []
+    instances: list[UnitClass] = []
 
     def __getitem__(cls, index: int) -> ProUnitClass:
         return cls.instances[index]
@@ -76,7 +77,7 @@ class UnitClass(ProUnitClass, metaclass=MetaUnitClass):
         self.__class__.instances.append(self)
 
     @classmethod
-    def get_unit_names(cls) -> List[str]:
+    def get_unit_names(cls) -> list[str]:
         """
         To get a list of the class instances' names
         """
@@ -97,9 +98,9 @@ class UnitClass(ProUnitClass, metaclass=MetaUnitClass):
 
 # heroes types (classes) implementation ---------------------------------------------
 
-ferocious_kick = ConcreteSkill(name="Свирепый пинок", damage=12.0, stamina=6.0)
-stiff_shot = ConcreteSkill(name="Мощный укол", damage=15.0, stamina=5.0)
-tickling = ConcreteSkill(name="Щекотка", damage=5.0, stamina=3.0)
+ferocious_kick = ConcreteSkill(name="Свирепый пинок", damage=12.0, required_stamina=6.0)
+stiff_shot = ConcreteSkill(name="Мощный укол", damage=15.0, required_stamina=5.0)
+tickling = ConcreteSkill(name="Щекотка", damage=5.0, required_stamina=3.0)
 
 warrior = UnitClass(
     name="Воин",
@@ -130,15 +131,3 @@ thief = UnitClass(
     armor=1.0,
     skill=tickling,
 )
-
-# for debug only
-if __name__ == "__main__":
-    print([item.name for item in UnitClass.instances])
-    print(UnitClass[0])
-    print(UnitClass[0].name)
-    print(len(UnitClass))
-    print(UnitClass.get_unit_names())
-    for unit in UnitClass:
-        print(unit)
-
-    # print([item.name for item in MetaUnitClass.items])

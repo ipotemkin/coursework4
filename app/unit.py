@@ -134,11 +134,11 @@ class BaseUnit:
             self.skill_used = True
             other.get_damage(self.unit_class.skill.damage)
             return (
-                f"{self.name} использует {self.unit_class.get_skill_name()}"
+                f"{self.name} использует {self.unit_class.skill_name}"
                 f" и наносит {self.unit_class.skill.damage} урона сопернику. "
             )
         return (
-            f"{self.name} пытался использовать {self.unit_class.get_skill_name()},"
+            f"{self.name} пытался использовать {self.unit_class.skill_name},"
             f" но у него не хватило выносливости. "
         )
 
