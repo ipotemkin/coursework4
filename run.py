@@ -1,8 +1,8 @@
 """This module contains a flask app"""
 
+from typing import Union, Callable
 from flask import Flask, render_template, request, redirect, url_for
 from werkzeug.wrappers.response import Response
-from typing import Union, Callable
 
 from app.classes import UnitClass
 from app.equipment import Equipment
@@ -34,16 +34,13 @@ def render_fighting_screen(func: Union[str, Callable]) -> Union[str, Response]:
     renders the fighting screen depending from the args
     """
 
-    if (
-        app.config["ARENA"].hero == NotImplemented
-        or app.config["ARENA"].enemy == NotImplemented
-    ):
+    if NotImplemented in (app.config["ARENA"].hero, app.config["ARENA"].enemy):
         return redirect(url_for("index"))
     return render_template(
         "fight.html",
         heroes={"player": app.config["ARENA"].hero, "enemy": app.config["ARENA"].enemy},
         result=(func() if app.config["ARENA"].is_game_on() else "Бой окончен!")
-        if type(func) != str
+        if not isinstance(func, str)
         else func,
     )
 
@@ -51,6 +48,10 @@ def render_fighting_screen(func: Union[str, Callable]) -> Union[str, Response]:
 def make_personage(
     class_name: Callable, name: str, hero_type: UnitClass
 ) -> Union[HumanPlayer, CompPlayer]:
+    """
+    make a personage with the specified class and hero type
+    """
+
     return class_name(
         name=name,
         unit_class=hero_type,
@@ -63,11 +64,19 @@ def make_personage(
 
 @app.route("/")
 def index() -> str:
+    """
+    Index page
+    """
+
     return render_template("index.html")
 
 
 @app.route("/choose-hero/", methods=["GET"])
 def choose_hero() -> Union[str, Response]:
+    """
+    Choose hero screen
+    """
+
     if app.config["ARENA"].is_game_on():
         return render_template("ongoing.html")
     app.config["ARENA"].start_game()
@@ -78,6 +87,10 @@ def choose_hero() -> Union[str, Response]:
 
 @app.route("/choose-hero/", methods=["POST"])
 def choose_hero_post() -> Response:
+    """
+    Choose hero post
+    """
+
     app.config["ARENA"].hero = make_personage(
         HumanPlayer,
         request.form["name"],
@@ -88,6 +101,10 @@ def choose_hero_post() -> Response:
 
 @app.route("/choose-enemy/", methods=["GET"])
 def choose_enemy() -> Union[str, Response]:
+    """
+    Choose enemy screen
+    """
+
     if app.config["ARENA"].hero == NotImplemented:
         return redirect(url_for("index"))
     return render_template(
@@ -97,6 +114,10 @@ def choose_enemy() -> Union[str, Response]:
 
 @app.route("/choose-enemy/", methods=["POST"])
 def choose_enemy_post() -> Response:
+    """
+    Choose enemy post
+    """
+
     app.config["ARENA"].enemy = make_personage(
         CompPlayer,
         request.form["name"],
@@ -107,26 +128,46 @@ def choose_enemy_post() -> Response:
 
 @app.route("/fight/")
 def fight() -> Union[str, Response]:
+    """
+    Starts the battle
+    """
+
     return render_fighting_screen("Бой начался!")
 
 
 @app.route("/fight/hit")
 def fight_hit() -> Union[str, Response]:
+    """
+    Make a hit
+    """
+
     return render_fighting_screen(app.config["ARENA"].attack)
 
 
 @app.route("/fight/use-skill")
 def fight_use_skill() -> Union[str, Response]:
+    """
+    Use your skill
+    """
+
     return render_fighting_screen(app.config["ARENA"].use_skill)
 
 
 @app.route("/fight/pass-turn")
 def fight_pass_turn() -> Union[str, Response]:
+    """
+    Pass your turn
+    """
+
     return render_fighting_screen(app.config["ARENA"].skip_turn)
 
 
 @app.route("/fight/end-fight")
 def fight_end_fight() -> Response:
+    """
+    End the fight
+    """
+
     app.config["ARENA"].end_game()
     return redirect(url_for("index"))
 
